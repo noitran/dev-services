@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+  router:
+    image: traefik:2.4
+    container_name: router
+    restart: on-failure
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/certs:/certs
+      - ./traefik/conf:/conf
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    labels:
+      - "traefik.http.routers.router.rule=Host(`router.docker`)"
+      - "traefik.http.routers.router.entrypoints=web"
+
+  ui:
+    image: portainer/portainer-ce
+    container_name: ui
+    restart: on-failure
+    ports:
+      - 9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ui_data:/data
+    command: -H unix:///var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ui.rule=Host(`ui.docker`)"
+      - "traefik.http.routers.ui.entrypoints=web"
+      - "traefik.http.services.ui.loadbalancer.server.port=9000"
+
+networks:
+  default:
+    name: local_dev_network
+
+volumes:
+  ui_data:
