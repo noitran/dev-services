@@ -1,4 +1,4 @@
-# <img src="docs/logo.png" alt="Noitran Logo" align="right"> Base PHP Docker Image
+# <img src="docs/logo.png" alt="Noitran Logo" align="right"> Docker Dev Services
 
 # About
 
